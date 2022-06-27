@@ -2,19 +2,17 @@
 
 This repository contains a sample Logic App (preview) project, with Azure deployment and GitHub Actions examples. For a sample on how to create DevOps pipeline for Logic Apps with Azure DevOps please see [here](https://github.com/Azure/logicapps/tree/master/azure-devops-sample)
 
-- [Logic Apps (Preview)](#logic-apps-preview)
+- [Logic Apps (Single-tenant) DevOps](#logic-apps-single-tenant-devops)
   - [Prerequisites](#prerequisites)
   - [Local](#local)
-    - [VS Code](#vs-code)
-    - [API Connections](#api-connections)
-      - [Recreate the operation using the connection](#recreate-the-operation-using-the-connection)
-      - [Create a new workflow just for connections](#create-a-new-workflow-just-for-connections)
+    - [Setting up your project in VS Code](#setting-up-your-project-in-vs-code)
+    - [Setting up your API Connections](#setting-up-your-api-connections)
+    - [Running your Project in VS Code](#running-your-project-in-vs-code)
   - [DevOps](#devops)
     - [ARM Deployment](#arm-deployment)
     - [GitHub Actions](#github-actions)
-      - [Application Pipeline](#application-pipeline)
-      - [IaC Pipeline](#IaC-pipeline)
-  - [Known Issues & Limitations](#known-issues--limitations)
+      - [The Samples Pipeline explained](#the-samples-pipeline-explained)
+      - [Deploying to more environments](#deploying-to-more-environments)
     - [Q & A](#q--a)
 
 ## Prerequisites
@@ -176,3 +174,9 @@ Q: Why do I have to recreate the operation that uses the API connection?
 Q: Why do I need to get a connection key to run locally?
 
 - A: When running logic apps locally, the connection needs to use the 'Raw' authentication method for connections to work. When deploying to Azure, the authentication method needs to be `ManagedIdentity`.
+
+
+
+
+az group deployment create --resource-group 'rg-logicAppDeploy'     --template-file '.\ARM\la-template.json'     --parameters '.\ARM\la-parameters.json'
+az group deployment create --resource-group 'rg-logicAppDeploy'     --template-file '.\ARM\connectors-template.json'     --parameters '.\ARM\connectors-parameters.json'
