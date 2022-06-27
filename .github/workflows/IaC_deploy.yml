@@ -23,6 +23,14 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS  }}
         enable-AzPSSession: true 
 
+    # SET CORRECT AZURE CONTEXT
+    - name: 'Set context to subscription'
+      uses: azure/powershell@v1
+      with:
+        inlineScript: |
+          Set-AzContext -Subscription ${{ secrets.AZURE_SUB }}
+        azPSVersion: "latest"
+
     # Checkout
     - name: Checkout
       uses: actions/checkout@v1
@@ -57,7 +65,7 @@ jobs:
       with:
         azcliversion: 2.0.72
         inlineScript: |
-          az account set --subscription ${{ secrets.AZURE_SUB }}
+          # az account set --subscription ${{ secrets.AZURE_SUB }}
           az functionapp config appsettings set --name ${{ steps.ladeploy.outputs.LAname }} --resource-group  ${{ secrets.RG_LA }} --settings "BLOB_CONNECTION_RUNTIMEURL=${{ steps.msdemoconn.outputs.blobendpointurl }}"
           az functionapp config appsettings set --name ${{ steps.ladeploy.outputs.LAname }} --resource-group  ${{ secrets.RG_LA }} --settings "WORKFLOWS_RESOURCE_GROUP_NAME=${{ secrets.RG_CON }}"
 
