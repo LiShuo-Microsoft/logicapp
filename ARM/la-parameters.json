@@ -3,22 +3,22 @@
     "contentVersion": "1.0.0.0",
     "parameters": { 
         "location": {
-            "value": "westus2"
+            "value": "eastus"
         },
         "environmentName": {
-            "value": "env-name"
+            "value": "DEV"
         },
         "projectName": {
-            "value": "project-name"
+            "value": "project-LOB1"
         },
         "logicAppName": {
-            "value": "la-name"
+            "value": "la-project-LOB1-001"
         },
         "appServicePlanName": {
-            "value": "asp-name"
+            "value": "asp-la"
         },
         "storageName": {
-            "value": "storage-name"
+            "value": "saaisdevtest001"
         },
         "kind": {
             "value": "StorageV2"
