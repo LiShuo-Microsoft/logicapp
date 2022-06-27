@@ -14,6 +14,7 @@ This repository contains a sample Logic App (preview) project, with Azure deploy
       - [The Samples Pipeline explained](#the-samples-pipeline-explained)
       - [Deploying to more environments](#deploying-to-more-environments)
     - [Q & A](#q--a)
+    - [Helper comnmands](#helper-comnmands)
 
 ## Prerequisites
 
@@ -175,8 +176,8 @@ Q: Why do I need to get a connection key to run locally?
 
 - A: When running logic apps locally, the connection needs to use the 'Raw' authentication method for connections to work. When deploying to Azure, the authentication method needs to be `ManagedIdentity`.
 
-
-
-
+### Helper comnmands
+az login
+az ad sp create-for-rbac --name "spn-GH-logicapp" --role contributor   --scopes /subscriptions/xxxxxxxxxxxxx/resourceGroups/rg-LogicAppDeploy  --sdk-auth
 az group deployment create --resource-group 'rg-logicAppDeploy'     --template-file '.\ARM\la-template.json'     --parameters '.\ARM\la-parameters.json'
 az group deployment create --resource-group 'rg-logicAppDeploy'     --template-file '.\ARM\connectors-template.json'     --parameters '.\ARM\connectors-parameters.json'
