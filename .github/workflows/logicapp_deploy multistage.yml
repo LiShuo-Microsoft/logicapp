@@ -9,7 +9,7 @@ env:
 
 on:
   # Trigger the workflow manually
-  # workflow_dispatch:
+  workflow_dispatch:
 
   # Trigger the workflow every time the build workflow ran to completion
   workflow_run:
