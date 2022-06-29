@@ -1,0 +1,120 @@
+# ##############################################################################
+# Github Actions workflow for Logic App deployment 
+# ##############################################################################
+name: Build and Deploy Logic App to multiple environments
+
+# Environment variables
+env:
+  LA_NAME: 'la-project-LOB1-001'
+
+on:
+  # Trigger the workflow manually
+  workflow_dispatch:
+
+  # Triggers when an environment file has been changed  
+  push:
+    branches:
+      - main
+      - feature/multistage
+    paths:
+      - "logic/**"
+      - ".github/workflows/logicapp_deploy_multistage.yml"
+
+  # Trigger the workflow every time the build workflow ran to completion
+  # workflow_run:
+  #   workflows:
+  #     - Deploy Logic App Infrastructure
+  #   types:
+  #     - completed
+
+jobs:
+  # build logic app zip package and upload to github  
+  build:
+    name: Build application
+    runs-on: ubuntu-latest
+    steps:
+      - name: "checkout repository"
+        uses: actions/checkout@v2
+      # - name: "setup node"
+      #   uses: actions/setup-node@v2.1.5
+      #   with:
+      #     node-version: 16
+      # - name: "install npm@latest"
+      #   run: npm i -g npm@latest
+      - name: Package logic
+        run: (cd logic; mkdir -p ../output; zip -r ../output/logic.zip .)
+      - name: Upload app zip package
+        uses: actions/upload-artifact@v2
+        with:
+          name: logic
+          path: ./output/
+          retention-days: 1 
+
+  # deploy Logic App workflows to DEV environment  
+  deploy_DEV:
+    name: Deploy to DEV environment
+    environment:
+      name: DEV
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - name: "checkout repository"
+        uses: actions/checkout@v2
+      - name: Login via Az module
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS}}
+          enable-AzPSSession: true 
+      - uses: actions/download-artifact@master
+        with:
+          name: logic
+          path: ./output/
+      # develop your deployment steps below
+      # ......
+
+  # deploy Logic App workflows to UAT environment  
+  deploy_UAT:
+    name: Deploy to UAT environment
+    environment:
+      name: UAT
+    needs:
+      - DEV
+    runs-on: ubuntu-latest
+    steps:
+      - name: "checkout repository"
+        uses: actions/checkout@v2
+      - name: Login via Az module
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS}}
+          enable-AzPSSession: true 
+      - uses: actions/download-artifact@master
+        with:
+          name: logic
+          path: ./output/
+      # develop your deployment steps below
+      # ......
+
+  # deploy Logic App workflows to PRD environment  
+  deploy_PRD:
+    name: Deploy to PRD environment
+    environment:
+      name: PRD
+    needs:
+      - UAT
+    runs-on: ubuntu-latest
+    steps:
+      - name: "checkout repository"
+        uses: actions/checkout@v2
+      - name: Login via Az module
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS}}
+          enable-AzPSSession: true 
+      - uses: actions/download-artifact@master
+        with:
+          name: logic
+          path: ./output/
+      # develop your deployment steps below
+      # ......
