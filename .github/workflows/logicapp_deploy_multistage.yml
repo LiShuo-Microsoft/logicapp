@@ -15,7 +15,6 @@ on:
   push:
     branches:
       - main
-      - feature/multistage
     paths:
       - "logic/**"
       - ".github/workflows/logicapp_deploy_multistage.yml"
@@ -79,7 +78,7 @@ jobs:
     environment:
       name: UAT
     needs:
-      - DEV
+      - deploy_DEV
     runs-on: ubuntu-latest
     steps:
       - name: "checkout repository"
@@ -102,7 +101,7 @@ jobs:
     environment:
       name: PRD
     needs:
-      - UAT
+      - deploy_UAT
     runs-on: ubuntu-latest
     steps:
       - name: "checkout repository"
