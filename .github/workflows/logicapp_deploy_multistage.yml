@@ -10,17 +10,22 @@ env:
 on:
   # Trigger the workflow manually
   workflow_dispatch:
+    inputs:
+      RG_LA:
+        description: "Resource Group Name"
+        # required: true
+      LA_NAME:
+        description: "Logic App Name"
 
-  # Triggers when an environment file has been changed  
+  # Triggers when any source code has been changed  
   push:
     branches:
       - main
-      - feature/multistage
     paths:
       - "logic/**"
       - ".github/workflows/logicapp_deploy_multistage.yml"
 
-  # Trigger the workflow every time the build workflow ran to completion
+  # Trigger the workflow every time the infra workflow ran to completion (i.e. infra was redeployed.)
   # workflow_run:
   #   workflows:
   #     - Deploy Logic App Infrastructure
@@ -32,15 +37,19 @@ jobs:
   build:
     name: Build application
     runs-on: ubuntu-latest
+    # example to use other runners
+    # runs-on: windows-latest
+    # runs-on: [self-hosted, linux]
     steps:
       - name: "checkout repository"
         uses: actions/checkout@v2
-      # - name: "setup node"
-      #   uses: actions/setup-node@v2.1.5
-      #   with:
-      #     node-version: 16
-      # - name: "install npm@latest"
-      #   run: npm i -g npm@latest
+      # example to install software on Windows runner
+      # - run: choco install azure-cli
+      # example to install software on Linux runner
+      # - name: Install jq tool
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install jq
       - name: Package logic
         run: (cd logic; mkdir -p ../output; zip -r ../output/logic.zip .)
       - name: Upload app zip package
@@ -61,16 +70,16 @@ jobs:
     steps:
       - name: "checkout repository"
         uses: actions/checkout@v2
+      - uses: actions/download-artifact@master
+        with:
+          name: logic
+          path: ./output/
       - name: Login via Az module
         uses: azure/login@v1
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
           enable-AzPSSession: true 
-      - uses: actions/download-artifact@master
-        with:
-          name: logic
-          path: ./output/
-      # develop your deployment steps below
+      # write your deployment steps below
       # ......
 
   # deploy Logic App workflows to UAT environment  
@@ -79,21 +88,21 @@ jobs:
     environment:
       name: UAT
     needs:
-      - DEV
+      - deploy_DEV
     runs-on: ubuntu-latest
     steps:
       - name: "checkout repository"
         uses: actions/checkout@v2
+      - uses: actions/download-artifact@master
+        with:
+          name: logic
+          path: ./output/
       - name: Login via Az module
         uses: azure/login@v1
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
           enable-AzPSSession: true 
-      - uses: actions/download-artifact@master
-        with:
-          name: logic
-          path: ./output/
-      # develop your deployment steps below
+      # write your deployment steps below
       # ......
 
   # deploy Logic App workflows to PRD environment  
@@ -102,19 +111,19 @@ jobs:
     environment:
       name: PRD
     needs:
-      - UAT
+      - deploy_UAT
     runs-on: ubuntu-latest
     steps:
       - name: "checkout repository"
         uses: actions/checkout@v2
+      - uses: actions/download-artifact@master
+        with:
+          name: logic
+          path: ./output/
       - name: Login via Az module
         uses: azure/login@v1
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}}
           enable-AzPSSession: true 
-      - uses: actions/download-artifact@master
-        with:
-          name: logic
-          path: ./output/
-      # develop your deployment steps below
+      # write your deployment steps below
       # ......
