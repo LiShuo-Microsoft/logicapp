@@ -11,20 +11,21 @@ on:
   # Trigger the workflow manually
   workflow_dispatch:
 
-  # Trigger the workflow every time the build workflow ran to completion
-  workflow_run:
-    workflows:
-      - Deploy Logic App Infrastructure
-    types:
-      - completed
-
   # Triggers when an environment file has been changed  
   push:
     branches:
       - main
+      - feature/multistage
     paths:
       - "logic/**"
-      - ".github/workflows/logicapp_deploy.yml"
+      - ".github/workflows/logicapp_deploy_multistage.yml"
+
+  # Trigger the workflow every time the build workflow ran to completion
+  # workflow_run:
+  #   workflows:
+  #     - Deploy Logic App Infrastructure
+  #   types:
+  #     - completed
 
 jobs:
   # build logic app zip package and upload to github  
