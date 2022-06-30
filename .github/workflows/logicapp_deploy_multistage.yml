@@ -13,9 +13,14 @@ on:
     inputs:
       RG_LA:
         description: "Resource Group Name"
-        # required: true
+        required: false
       LA_NAME:
         description: "Logic App Name"
+        required: false
+      commitID:
+        required: false
+        type: string
+        description: "specify a specific Github Commit # to deploy"
 
   # Triggers when any source code has been changed  
   push:
@@ -41,8 +46,10 @@ jobs:
     # runs-on: windows-latest
     # runs-on: [self-hosted, linux]
     steps:
-      - name: "checkout repository"
-        uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.commitID }}
       # example to install software on Windows runner
       # - run: choco install azure-cli
       # example to install software on Linux runner
@@ -68,8 +75,10 @@ jobs:
       - build
     runs-on: ubuntu-latest
     steps:
-      - name: "checkout repository"
-        uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.commitID }}
       - uses: actions/download-artifact@master
         with:
           name: logic
@@ -91,8 +100,10 @@ jobs:
       - deploy_DEV
     runs-on: ubuntu-latest
     steps:
-      - name: "checkout repository"
-        uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.commitID }}
       - uses: actions/download-artifact@master
         with:
           name: logic
@@ -114,8 +125,10 @@ jobs:
       - deploy_UAT
     runs-on: ubuntu-latest
     steps:
-      - name: "checkout repository"
-        uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.commitID }}
       - uses: actions/download-artifact@master
         with:
           name: logic
